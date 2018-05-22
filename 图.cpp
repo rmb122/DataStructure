@@ -135,7 +135,7 @@ private:
             return;
         }
         for(auto &nodeInfo : graphNodes[currSerialNum].connectedNode) {
-            if(keyTime[nodeInfo.first] == earliestTime[nodeInfo.first]) {
+            if(keyTime[nodeInfo.first] == earliestTime[nodeInfo.first] && keyTime[currSerialNum] + nodeInfo.second == keyTime[nodeInfo.first]) {
                 _getKeyPath(nodeInfo.first, earliestTime, keyTime, currPath, keyPaths);
             }
         }
