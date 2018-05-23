@@ -136,6 +136,7 @@ private:
         }
         for(auto &nodeInfo : graphNodes[currSerialNum].connectedNode) {
             if(keyTime[nodeInfo.first] == earliestTime[nodeInfo.first] && keyTime[currSerialNum] + nodeInfo.second == keyTime[nodeInfo.first]) {
+                //keyTime[currSerialNum] + nodeInfo.second, keyTime[nodeInfo.first] 需要相等, 否则可能是抄近道的
                 _getKeyPath(nodeInfo.first, earliestTime, keyTime, currPath, keyPaths);
             }
         }
@@ -320,10 +321,56 @@ public:
         _getKeyPath(topo.front(), earliestTime, keyTime, {}, keyPaths);
         return keyPaths;
     }
+
+    vector<vector<unsigned int>> dijkstra(unsigned int startSerialNum) {
+        vector<vector<unsigned int>> paths(graphNodes.size());
+        vector<unsigned int> distance(graphNodes.size(), UINT32_MAX);
+        initTree();
+
+        bool allSolved = false;
+        distance[startSerialNum] = 0;
+
+        while(!allSolved) {
+            allSolved = true; //检查是否完成算法
+            for(graphNode &node : graphNodes) {
+                if(!node.isVisited) {
+                    allSolved = false;
+                    break;
+                }
+            }
+
+            if(!allSolved) {
+                unsigned int minDistance = UINT32_MAX;
+                unsigned int minDistSerialNum;
+                for(unsigned int i = 0; i < distance.size(); ++i) {
+                    if(distance[i] < minDistance && !graphNodes[i].isVisited) { //找到最小距离的节点,这里用 isVisited 代替 isSovled
+                        minDistance = distance[i];
+                        minDistSerialNum = i;
+                    }
+                }
+
+                for(auto &nodeInfo : graphNodes[minDistSerialNum].connectedNode) {
+                    unsigned int tempDist = distance[minDistSerialNum] + nodeInfo.second;
+                    if(tempDist < distance[nodeInfo.first]) {
+                        distance[nodeInfo.first] = tempDist;
+                        vector<unsigned int> temp = paths[minDistSerialNum];
+                        temp.push_back(minDistSerialNum);
+                        paths[nodeInfo.first] = temp;
+                    }
+                }
+                graphNodes[minDistSerialNum].isVisited = true;
+            }
+        }
+
+        for(unsigned int i = 0; i < paths.size(); ++i) {
+            paths[i].push_back(i); //将路径中添加自己
+        }
+        return paths;
+    }
 };
 
 int main() {
-    graph test({0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+    graph test({0, 1, 2, 3, 4, 5, 6, 7});
     /*
     test.connectNode(0, 5, 2);
     test.connectNode(0, 1, 2);
@@ -334,6 +381,7 @@ int main() {
     test.connectNode(2, 3, 2);
     test.connectNode(7, 3, 2);
     */
+    /*
     test.connectNode(0, 1, 3);
     test.connectNode(0, 2, 4);
     test.connectNode(0, 3, 5);
@@ -349,12 +397,38 @@ int main() {
     test.connectNode(6, 9, 5);
     test.connectNode(7, 9, 6);
     test.connectNode(8, 9, 4);
+    */
+    /*
+    test.connectNode(0, 1, 3);
+    test.connectNode(0, 2, 8);
+    test.connectNode(2, 1, 4);
+    test.connectNode(2, 4, 10);
+    test.connectNode(1, 4, 6);
+    test.connectNode(1, 3, 9);
+    test.connectNode(3, 5, 6);
+    test.connectNode(4, 5, 9);
+    */
+
+    test.connectNode(0, 1, 30);
+    test.connectNode(0, 4, 10);
+    test.connectNode(4, 0, 20);
+    test.connectNode(4, 1, 18);
+    test.connectNode(4, 5, 7);
+    test.connectNode(5, 1, 8);
+    test.connectNode(0, 2, 50);
+    test.connectNode(1, 2, 2);
+    test.connectNode(1, 6, 6);
+    test.connectNode(5, 6, 15);
+    test.connectNode(6, 7, 15);
+    test.connectNode(2, 3, 20);
+    test.connectNode(2, 6, 3);
+    test.connectNode(7, 3, 12);
 
     test.travelDFS();
     cout << endl;
     test.travelBFS();
     cout << endl;
 
-    test.getKeyPath();
+    test.dijkstra(0);
     return 0;
 }
