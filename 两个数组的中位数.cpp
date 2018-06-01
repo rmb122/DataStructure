@@ -43,7 +43,7 @@ double _getMedianOfTwoSortedArray(vector<int> &arrA, vector<int> &arrB) {
     unsigned int leftB = 0;
     unsigned int rightA = arrA.size() - 1;
     unsigned int rightB = arrB.size() - 1;
-
+    //复杂度 o(log2(m + n))
     while(midA - leftA >= 2 && midB - leftB >= 2) {
         if(arrA[midA] > arrB[midB]) {
             leftB = midB;
