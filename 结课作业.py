@@ -1,5 +1,4 @@
 from PIL import Image as image
-from PIL import ImageFilter
 
 def loadPic(name):
     piexls = list()
@@ -76,10 +75,51 @@ def sharpifyGray(piexls):
     return newPiexls
 
 
-piexls = loadPic("test.png")
-#piexls = graify(piexls)
-piexls = sharpifyRGBA(piexls)
-pixs2pic(piexls, "RGBA").save("233.png")
-#i = image.open("test.png")
-#i.filter(ImageFilter.SHARPEN).show()
+
+def smoothifyRBGA(piexls):
+    newPiexls = list()
+    gaussTemplate = [1, 2, 1, 2, 4, 2, 1, 2, 1]
+    overfolw = lambda x: x if x <= 255 else 255
+    for x in range(1, len(piexls) - 1):
+        temp = list()
+        for y in range(1, len(piexls[x]) - 1):
+            R, G, B = 0, 0, 0
+            curr = 0
+            for xShift in range(-1, 2):
+                for yShift in range(-1, 2):
+                    R += (piexls[x + xShift][y + yShift][0] * gaussTemplate[curr])
+                    G += (piexls[x + xShift][y + yShift][1] * gaussTemplate[curr])
+                    B += (piexls[x + xShift][y + yShift][2] * gaussTemplate[curr])
+                    curr += 1
+            R = overfolw(R // 9)
+            G = overfolw(G // 9)
+            B = overfolw(B // 9)
+            temp.append((R, G, B, piexls[x][y][3]))
+        newPiexls.append(temp)
+    return newPiexls
+
+
+def smoothifyGray(piexls):
+    newPiexls = list()
+    gaussTemplate = [1, 2, 1, 2, 4, 2, 1, 2, 1]
+    overfolw = lambda x: x if x <= 255 else 255
+    for x in range(1, len(piexls) - 1):
+        temp = list()
+        for y in range(1, len(piexls[x]) - 1):
+            grayscale = 0
+            curr = 0
+            for xShift in range(-1, 2):
+                for yShift in range(-1, 2):
+                    grayscale += (piexls[x + xShift][y + yShift] * gaussTemplate[curr])
+                    curr += 1
+            grayscale = overfolw(grayscale // 9)
+            temp.append(grayscale)
+        newPiexls.append(temp)
+    return newPiexls
+
+
+piexls = loadPic("/home/rmb122/repos/miscs/DataStructureHomework/test.png")
+piexls = graify(piexls)
+piexls = smoothifyGray(piexls)
+pixs2pic(piexls, "L").show()
 pass
