@@ -91,9 +91,9 @@ def smoothifyRBGA(piexls):
                     G += (piexls[x + xShift][y + yShift][1] * gaussTemplate[curr])
                     B += (piexls[x + xShift][y + yShift][2] * gaussTemplate[curr])
                     curr += 1
-            R = overfolw(R // 9)
-            G = overfolw(G // 9)
-            B = overfolw(B // 9)
+            R = overfolw(R // 16)
+            G = overfolw(G // 16)
+            B = overfolw(B // 16)
             temp.append((R, G, B, piexls[x][y][3]))
         newPiexls.append(temp)
     return newPiexls
@@ -112,13 +112,13 @@ def smoothifyGray(piexls):
                 for yShift in range(-1, 2):
                     grayscale += (piexls[x + xShift][y + yShift] * gaussTemplate[curr])
                     curr += 1
-            grayscale = overfolw(grayscale // 9)
+            grayscale = overfolw(grayscale // 16)
             temp.append(grayscale)
         newPiexls.append(temp)
     return newPiexls
 
 
-piexls = loadPic("/home/rmb122/repos/miscs/DataStructureHomework/test.png")
+piexls = loadPic("/home/rmb122/repos/miscs/DataStructure/结课作业/test.png")
 piexls = graify(piexls)
 piexls = smoothifyGray(piexls)
 pixs2pic(piexls, "L").show()
