@@ -72,8 +72,8 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         return "/".join([sys.path[0], name])
 
     def getImgPath(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self,"Select your pictures",sys.path[0],"Pictures (*.png *.jpg *.jpeg *.bmp)")
-        if path:
+        path = QtWidgets.QFileDialog.getOpenFileName(self, "Select your pictures", sys.path[0], "Pictures (*.png *.jpg *.jpeg *.bmp)")
+        if path and path[0]:
             self.currPath = path[0]
             if Image.open(self.currPath).mode == "RGBA": #检测是否是彩色图片
                 pic = QtGui.QPixmap(self.currPath)
@@ -88,7 +88,6 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
     def graify(self):
         if self.currPath is None:
             return
-        
         pipe = Popen([self.joinThePath("DataStructure.out"), "1", self.currPath, self.joinThePath(".tempGray.png")])
         pipe.wait()
         pic = QtGui.QPixmap(self.joinThePath(".tempGray.png"))
