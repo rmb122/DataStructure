@@ -1,6 +1,7 @@
 import sys
 from subprocess import Popen
 
+from PIL import Image
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -74,13 +75,16 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         path = QtWidgets.QFileDialog.getOpenFileName(self,"Select your pictures",sys.path[0],"Pictures (*.png *.jpg *.jpeg *.bmp)")
         if path:
             self.currPath = path[0]
-            pic = QtGui.QPixmap(self.currPath)
-            self.setFixedSize(pic.size())
-            self.label.setFixedSize(pic.size())
-            self.label.setPixmap(pic)
-            self.currStatus = "origin"
-            self.currSharp = None
-    
+            if Image.open(self.currPath).mode == "RGBA": #检测是否是彩色图片
+                pic = QtGui.QPixmap(self.currPath)
+                self.setFixedSize(pic.size())
+                self.label.setFixedSize(pic.size())
+                self.label.setPixmap(pic)
+                self.currStatus = "origin"
+                self.currSharp = None
+            else:
+                QtWidgets.QMessageBox.warning(self, "Tips", "请选择一张彩色图片")
+                
     def graify(self):
         if self.currPath is None:
             return
