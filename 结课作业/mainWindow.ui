@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>458</width>
+    <height>96</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>picTransfer</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>91</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="act_choosePic"/>
+   <addaction name="act_origin"/>
+   <addaction name="act_gray"/>
+   <addaction name="act_sharpfy"/>
+   <addaction name="act_smoothfy"/>
+   <addaction name="act_savePic"/>
+  </widget>
+  <action name="act_choosePic">
+   <property name="text">
+    <string>选择图片</string>
+   </property>
+  </action>
+  <action name="act_origin">
+   <property name="text">
+    <string>原图</string>
+   </property>
+  </action>
+  <action name="act_gray">
+   <property name="text">
+    <string>灰度图</string>
+   </property>
+  </action>
+  <action name="act_sharpfy">
+   <property name="text">
+    <string>锐化</string>
+   </property>
+  </action>
+  <action name="act_smoothfy">
+   <property name="text">
+    <string>模糊</string>
+   </property>
+  </action>
+  <action name="act_savePic">
+   <property name="text">
+    <string>保存图片</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

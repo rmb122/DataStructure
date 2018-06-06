@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/rmb122/repos/miscs/DataStructure/结课作业/main.cpp" "/home/rmb122/repos/miscs/DataStructure/结课作业/CMakeFiles/DataStructure.dir/main.cpp.o"
+  "/home/rmb122/repos/miscs/DataStructure/结课作业/main.cpp" "/home/rmb122/repos/miscs/DataStructure/结课作业/CMakeFiles/DataStructure.out.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -41,7 +42,7 @@ Mat graify(Mat &img) {
 
 Mat sharpfyRGBA(Mat &img) {
     int laplaTemplate[] = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
-    Mat newImg = img;
+    Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
         for(unsigned int y = 1; y < img.rows - 1; y++) {
             int R = 0, G = 0, B = 0;
@@ -68,7 +69,7 @@ Mat sharpfyRGBA(Mat &img) {
 
 Mat sharpfyGray(Mat &img) {
     int laplaTemplate[] = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
-    Mat newImg = img;
+    Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
         for(unsigned int y = 1; y < img.rows - 1; y++) {
             int gray = 0;
@@ -88,7 +89,7 @@ Mat sharpfyGray(Mat &img) {
 
 Mat smoothfyRGBA(Mat &img) {
     int gaussTemplate[] = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-    Mat newImg = img;
+    Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
         for(unsigned int y = 1; y < img.rows - 1; y++) {
             int R = 0, G = 0, B = 0;
@@ -118,7 +119,7 @@ Mat smoothfyRGBA(Mat &img) {
 
 Mat smoothfyGray(Mat &img) {
     int gaussTemplate[] = {1, 2, 1, 2, 4, 2, 1, 2, 1};
-    Mat newImg = img;
+    Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
         for(unsigned int y = 1; y < img.rows - 1; y++) {
             int gray = 0;
@@ -135,4 +136,39 @@ Mat smoothfyGray(Mat &img) {
         }
     }
     return newImg;
+}
+
+int main(int argc, char const *argv[]) {
+    if(argc == 4) { //mode path savePath
+        char const* modeChar = argv[1];
+        char const* path = argv[2];
+        char const* savePath = argv[3];
+
+        int mode = atoi(modeChar);
+        Mat img = imread(path, CV_LOAD_IMAGE_UNCHANGED);
+
+        switch(mode) {
+        case 1:
+            img = graify(img);
+            break;
+        case 2:
+            img = sharpfyGray(img);
+            break;
+        case 3:
+            img = sharpfyRGBA(img);
+            break;
+        case 4:
+            img = smoothfyGray(img);
+            break;
+        case 5:
+            img = smoothfyRGBA(img);
+            break;
+        default:
+            return -1;
+        }
+        imwrite(savePath, img);
+        return 0;
+    } else {
+        return -1;
+    }
 }

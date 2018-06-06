@@ -121,5 +121,5 @@ set(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
-  "CMakeFiles/DataStructure.dir/DependInfo.cmake"
+  "CMakeFiles/DataStructure.out.dir/DependInfo.cmake"
   )

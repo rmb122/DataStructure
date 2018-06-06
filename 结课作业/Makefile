@@ -111,17 +111,17 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named DataStructure
+# Target rules for targets named DataStructure.out
 
 # Build rule for target.
-DataStructure: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 DataStructure
-.PHONY : DataStructure
+DataStructure.out: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 DataStructure.out
+.PHONY : DataStructure.out
 
 # fast build rule for target.
-DataStructure/fast:
-	$(MAKE) -f CMakeFiles/DataStructure.dir/build.make CMakeFiles/DataStructure.dir/build
-.PHONY : DataStructure/fast
+DataStructure.out/fast:
+	$(MAKE) -f CMakeFiles/DataStructure.out.dir/build.make CMakeFiles/DataStructure.out.dir/build
+.PHONY : DataStructure.out/fast
 
 main.o: main.cpp.o
 
@@ -129,7 +129,7 @@ main.o: main.cpp.o
 
 # target to build an object file
 main.cpp.o:
-	$(MAKE) -f CMakeFiles/DataStructure.dir/build.make CMakeFiles/DataStructure.dir/main.cpp.o
+	$(MAKE) -f CMakeFiles/DataStructure.out.dir/build.make CMakeFiles/DataStructure.out.dir/main.cpp.o
 .PHONY : main.cpp.o
 
 main.i: main.cpp.i
@@ -138,7 +138,7 @@ main.i: main.cpp.i
 
 # target to preprocess a source file
 main.cpp.i:
-	$(MAKE) -f CMakeFiles/DataStructure.dir/build.make CMakeFiles/DataStructure.dir/main.cpp.i
+	$(MAKE) -f CMakeFiles/DataStructure.out.dir/build.make CMakeFiles/DataStructure.out.dir/main.cpp.i
 .PHONY : main.cpp.i
 
 main.s: main.cpp.s
@@ -147,7 +147,7 @@ main.s: main.cpp.s
 
 # target to generate assembly for a file
 main.cpp.s:
-	$(MAKE) -f CMakeFiles/DataStructure.dir/build.make CMakeFiles/DataStructure.dir/main.cpp.s
+	$(MAKE) -f CMakeFiles/DataStructure.out.dir/build.make CMakeFiles/DataStructure.out.dir/main.cpp.s
 .PHONY : main.cpp.s
 
 # Help Target
@@ -157,7 +157,7 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... DataStructure"
+	@echo "... DataStructure.out"
 	@echo "... edit_cache"
 	@echo "... main.o"
 	@echo "... main.i"
