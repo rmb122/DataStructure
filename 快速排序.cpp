@@ -4,40 +4,34 @@
 using std::vector;
 
 void quickSort(vector<int> &arr, unsigned int startPos, unsigned int endPos) {
-    if(startPos + 1 >= endPos || endPos == std::numeric_limits<unsigned int>::max()) {
-        if(startPos + 1 == endPos) {
-            if(arr[startPos] > arr[startPos + 1]) {
-                arr[startPos] ^= arr[startPos + 1];
-                arr[startPos + 1] ^= arr[startPos];
-                arr[startPos] ^= arr[startPos + 1];
-            }
-        }
+    if(startPos >= endPos || endPos == UINT32_MAX) {
         return;
     }
 
     int mid = arr[startPos];
-    unsigned int blank = startPos;
-    unsigned int front = startPos + 1;
+    unsigned int front = startPos;
     unsigned int behind = endPos;
 
     while(front < behind) {
-        while(front < behind && arr[front] < mid) {
-            front++;
-        }
-        while(front < behind && arr[behind] > mid) {
+        while(front < behind && arr[behind] > mid) { //寻找一个小数
             behind--;
         }
-        if(behind == startPos + 1) { //出现这种情况说明所有元素都比中间值大, 直接跳出
-            break;
+        if(front < behind) {
+            arr[front] = arr[behind];
+            front++;
         }
-        arr[blank] = arr[behind];
-        arr[behind] = arr[front];
-        blank = front;
+        while(front < behind && arr[front] < mid) { //寻找一个大数
+            front++;
+        }
+        if(front < behind) {
+            arr[behind] = arr[front];
+            behind--;
+        }
     }
-    arr[blank] = mid;
+    arr[front] = mid;
 
-    quickSort(arr, startPos, behind - 1);
-    quickSort(arr, behind, endPos);
+    quickSort(arr, startPos, front - 1);
+    quickSort(arr, front + 1, endPos);
 }
 
 int main() {
