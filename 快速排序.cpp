@@ -33,9 +33,3 @@ void quickSort(vector<int> &arr, unsigned int startPos, unsigned int endPos) {
     quickSort(arr, startPos, front - 1);
     quickSort(arr, front + 1, endPos);
 }
-
-int main() {
-    vector<int> t = {10, 9, 8, 7, -111, 6, 5, 122123, 4, 3, 2, 1};
-    quickSort(t, 0, t.size() - 1);
-    return 0;
-}
