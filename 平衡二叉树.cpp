@@ -1,18 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <queue>
 #include <cmath>
+#include <queue>
 
 class treeNode {
     friend class tree;
 
     treeNode* left;
     treeNode* right;
+    treeNode* parent;
     int value;
+    int height;
 
-    treeNode(treeNode* left, treeNode* right, int value) : left(left), right(right), value(value) {};
-    treeNode() : left(nullptr), right(nullptr), value(0) {};
+    treeNode(treeNode* left, treeNode* right, treeNode* parent, int value, int height) : left(left), right(right), parent(parent), value(value), height(height) {};
+    treeNode() : left(nullptr), right(nullptr), parent(nullptr), value(0), height(0) {};
 };
 
 class tree {
@@ -39,23 +41,6 @@ class tree {
         }
     }
 
-    void getPath(std::vector<std::string> &paths, std::string currPath, treeNode* node) {
-        if(node == nullptr) {
-            return;
-        }
-
-        std::string data = std::to_string(node->value);
-        data = "->" + data;
-        currPath += data;
-
-        getPath(paths, currPath, node->right);
-        getPath(paths, currPath, node->left);
-
-        if(node->right == nullptr && node->left == nullptr) {
-            paths.push_back(currPath);
-        }
-    }
-
     inline int max(int a, int b) {
         if(a > b) {
             return a;
@@ -72,48 +57,82 @@ class tree {
         }
     }
 
+    inline int getHeight(treeNode* &node) {
+        if(node == nullptr) {
+            return 0;
+        } else {
+            return node->height;
+        }
+    }
+
+    treeNode* leftRotate(treeNode* node) {
+        treeNode* temp = node->right;
+        node->right = temp->left;
+        temp->parent = node->parent;
+        node->parent = temp;
+        temp->left = node;
+        if(temp->parent != nullptr) {
+            if(temp->parent->left == node) {
+                temp->parent->left = temp;
+            } else {
+                temp->parent->right = temp;
+            }
+        }
+        reCalcHeight(node);
+        reCalcHeight(temp);
+        return temp;
+    }
+
+    treeNode* rightRotate(treeNode * node) {
+        treeNode* temp = node->left;
+        node->left = temp->right;
+        temp->parent = node->parent;
+        node->parent = temp;
+        temp->right = node;
+        if(temp->parent != nullptr) { //判断是 RL 还是 LL
+            if(temp->parent->left == node) {
+                temp->parent->left = temp;
+            } else {
+                temp->parent->right = temp;
+            }
+        }
+        reCalcHeight(node);
+        reCalcHeight(temp);
+        return temp;
+    }
+
+    void reCalcHeight(treeNode * node) {
+        node->height = max(getHeight(node->left), getHeight(node->right)) + 1;
+    }
+
+    treeNode* balance(treeNode * node) {
+        if(getHeight(node->left) - getHeight(node->right) >= 2) {
+            if(getHeight(node->left->left) > getHeight(node->left->right)) { //LL
+                node = rightRotate(node);
+            } else { //LR
+                leftRotate(node->left);
+                node = rightRotate(node);
+            }
+        } else {
+            if(getHeight(node->right) - getHeight(node->left) >= 2) {
+                if(getHeight(node->right->right) > getHeight(node->right->left)) { //RR
+                    node = leftRotate(node);
+                } else { //RL
+                    rightRotate(node->right);
+                    node = leftRotate(node);
+                }
+            }
+        }
+        return node;
+    }
+
 public:
     ~tree() {
         delTree(root);
     }
 
-    void insert(int value) {
-        if (root == nullptr) {
-            root = new treeNode(nullptr, nullptr, value);
-        } else {
-            treeNode* curr = root;
-            while (true) {
-                if (value >= curr->value) {
-                    if (curr->right == nullptr) {
-                        curr->right = new treeNode(nullptr, nullptr, value);
-                        return;
-                    } else {
-                        curr = curr->right;
-                    }
-                } else {
-                    if (curr->left == nullptr) {
-                        curr->left = new treeNode(nullptr, nullptr, value);
-                        return;
-                    } else {
-                        curr = curr->left;
-                    }
-                }
-            }
-        }
-    }
-
     int getDepth() {
         return _getDepth(root, 0);
-    }
-
-    std::vector<std::string> getPaths() {
-        std::vector<std::string> paths;
-        getPath(paths, "root", root);
-        return paths;
-    }
-
-    void print() {
-        printEx(root);
     }
 
     std::vector<int> transToArray(int depth) {
@@ -188,11 +207,46 @@ public:
             putChars(' ', (getLength(depth - currDepth) - 2) * 2 + 1);
         }
     }
+
+    void insert(int value) {
+        if(root == nullptr) {
+            root = new treeNode(nullptr, nullptr, nullptr, value, 1);
+        } else {
+            treeNode* curr = root;
+            while (true) {
+                if (value >= curr->value) {
+                    if (curr->right == nullptr) {
+                        curr->right = new treeNode(nullptr, nullptr, curr, value, 1);
+                        break;
+                    } else {
+                        curr = curr->right;
+                    }
+                } else {
+                    if (curr->left == nullptr) {
+                        curr->left = new treeNode(nullptr, nullptr, curr, value, 1);
+                        break;
+                    } else {
+                        curr = curr->left;
+                    }
+                }
+            }
+
+            while(curr != nullptr) {
+                reCalcHeight(curr);
+                curr = balance(curr);
+                curr = curr->parent; //不断平衡以及计算高度直至 root
+            }
+        }
+    }
+
+    void print() {
+        printEx(root);
+    }
+
 };
 
 int main() {
     tree test;
-
     test.insert(10);
     test.insert(5);
     test.insert(15);
@@ -204,9 +258,11 @@ int main() {
     test.insert(-21);
     test.insert(12);
     test.insert(21);
-    test.insert(12312);
+    test.insert(12312312);
     test.insert(1234);
     test.printTree();
+    std::cout << std::endl;
+    test.print();
     return 0;
 }
 
