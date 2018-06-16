@@ -4,6 +4,8 @@
 #include <cmath>
 #include <queue>
 
+#define debug true
+
 class treeNode {
     friend class tree;
 
@@ -68,15 +70,20 @@ class tree {
     treeNode* leftRotate(treeNode* node) {
         treeNode* temp = node->right;
         node->right = temp->left;
+        if(node->right != nullptr) {
+            node->right->parent = node;
+        }
         temp->parent = node->parent;
         node->parent = temp;
         temp->left = node;
-        if(temp->parent != nullptr) {
+        if(temp->parent != nullptr) { //判断是 LR 还是 RR
             if(temp->parent->left == node) {
                 temp->parent->left = temp;
             } else {
                 temp->parent->right = temp;
             }
+        } else { //如果 temp 的父节点是 nullptr, 说明 temp 就是新的 root 节点
+            root = temp;
         }
         reCalcHeight(node);
         reCalcHeight(temp);
@@ -86,6 +93,9 @@ class tree {
     treeNode* rightRotate(treeNode * node) {
         treeNode* temp = node->left;
         node->left = temp->right;
+        if(node->left != nullptr) {
+            node->left->parent = node;
+        }
         temp->parent = node->parent;
         node->parent = temp;
         temp->right = node;
@@ -95,6 +105,8 @@ class tree {
             } else {
                 temp->parent->right = temp;
             }
+        } else { //如果 temp 的父节点是 nullptr, 说明 temp 就是新的 root 节点
+            root = temp;
         }
         reCalcHeight(node);
         reCalcHeight(temp);
@@ -195,8 +207,8 @@ public:
         for(int i = 0 ; i < pow(2, depth) - 1; ++i) {
             if(i >= static_cast<int>(pow(2, currDepth)) - 1) {
                 std::cout << std::endl; //结束上一行
-                std::cout << currDepth;
                 currDepth++;
+                std::cout << currDepth;
                 putChars(' ', getLength(depth - currDepth) - 2); //开始新一行的空
             }
             if(treeArray[i] != INT32_MAX) {
@@ -237,6 +249,10 @@ public:
                 curr = curr->parent; //不断平衡以及计算高度直至 root
             }
         }
+        if(debug) {
+            printTree();
+            std::cout << std::endl;
+        }
     }
 
     void print() {
@@ -244,25 +260,3 @@ public:
     }
 
 };
-
-int main() {
-    tree test;
-    test.insert(10);
-    test.insert(5);
-    test.insert(15);
-    test.insert(14);
-    test.insert(17);
-    test.insert(4);
-    test.insert(20);
-    test.insert(-100);
-    test.insert(-21);
-    test.insert(12);
-    test.insert(21);
-    test.insert(12312312);
-    test.insert(1234);
-    test.printTree();
-    std::cout << std::endl;
-    test.print();
-    return 0;
-}
-
