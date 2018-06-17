@@ -1,4 +1,4 @@
-#include "avlTree.cpp"
+#include "shellSort.cpp"
 #include <random>
 #include <cassert>
 
@@ -22,19 +22,21 @@ bool isOrdered(std::vector<int> &arr, unsigned int startPos, unsigned int endPos
 }
 
 int main() {
+
+    for(unsigned int i = 0; i < 1000; i++) {
+        vector<int> test = getRandomArr(1000, INT32_MIN, INT32_MAX);
+        shellSort(test);
+        assert(isOrdered(test, 0, test.size()));
+    }
+
     /*
-    for(unsigned int i = 0; i < 50; i++) {
-        vector<int> test = getRandomArr(100);
-        heapSort(test, 1, test.size() - 5);
-        assert(isOrdered(test, 1, test.size() - 5));
-    }
-    */
-    std::vector<int> test = getRandomArr(100, -9999, 99999);
-    tree t;
-    for(int num : test) {
-        t.insert(num);
-    }
-    std::cout << std::endl;
-    t.print();
+     std::vector<int> test = getRandomArr(100, -9999, 99999);
+     tree t;
+     for(int num : test) {
+         t.insert(num);
+     }
+     std::cout << std::endl;
+     t.print();
+     */
     return 0;
 }
