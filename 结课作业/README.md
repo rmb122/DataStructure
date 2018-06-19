@@ -4,6 +4,7 @@
 ```sh
 pip install pyqt5
 cmake CMakeLists.txt
+make
 ```
 然后
 ```sh
