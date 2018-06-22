@@ -1,5 +1,5 @@
 import sys
-from subprocess import Popen
+from subprocess import Popen, PIPE
 
 from PIL import Image
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -59,121 +59,119 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         QtWidgets.QWidget.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
-        self.currPath = None
-        self.currStatus = None
-        self.act_choosePic.triggered.connect(self.getImgPath)
+        self.act_choosePic.triggered.connect(self.loadImg)
         self.act_gray.triggered.connect(self.graify)
         self.act_sharpfy.triggered.connect(self.sharpfy)
         self.act_smoothfy.triggered.connect(self.smoothfy)
         self.act_origin.triggered.connect(self.origin)
         self.act_savePic.triggered.connect(self.savePic)
-        self.label.mouseMoveEvent = self.printPos
+        self.currPath = None
+        self.isGray = False
+        self.label.mousePressEvent = self.setStartPoint  #设置回调函数
+        self.label.mouseMoveEvent = self.draw
         
-    def printPos(self, event):
-        pic = self.label.pixmap()
-        if pic is None:
-            return
-        painter = QtGui.QPainter(pic)
-        painter.setPen(QtGui.QColor(0, 160, 230))
-        painter.drawPoint(event.x(), event.y())
-        self.label.setPixmap(pic)
-        print(event.x(), event.y())
 
-    def joinThePath(self, name):
+    def getPainter(self): #返回绘图器
+        pic = self.label.pixmap()
+        painter = QtGui.QPainter(pic)
+        pen = QtGui.QPen(QtGui.QColor(0, 160, 230))
+        pen.setWidth(5)
+        painter.setPen(pen)
+        return painter
+
+
+    def setStartPoint(self, event): #设置初始点
+        self.getPainter().drawPoint(event.x(), event.y())
+        self.lastPoint = (event.x(), event.y())
+        self.update()
+
+
+    def draw(self, event): #对鼠标拖动做出响应
+        x = event.x()
+        y = event.y()
+        painter = self.getPainter()
+        painter.drawPoint(x, y)
+        painter.drawLine(self.lastPoint[0], self.lastPoint[1], x, y)
+        self.lastPoint = (x, y)
+        print(event.x(), event.y())
+        self.update()
+        
+        
+    def getPath(self, name): #返回绝对路径
         return "/".join([sys.path[0], name])
 
-    def getImgPath(self):
+
+    def loadImg(self): #加载图片
         path = QtWidgets.QFileDialog.getOpenFileName(self, "Select your pictures", sys.path[0], "Pictures (*.png *.jpg *.jpeg *.bmp)")
         if path and path[0]:
             self.currPath = path[0]
-            if Image.open(self.currPath).mode == "RGBA": #检测是否是彩色图片
-                pic = QtGui.QPixmap(self.currPath)
-                self.setFixedSize(pic.size())
-                self.label.setFixedSize(pic.size())
-                self.label.setPixmap(pic)
-                self.currStatus = "origin"
-                self.currSharp = None
-            else:
-                QtWidgets.QMessageBox.warning(self, "Tips", "请选择一张彩色图片")
-                
-    def graify(self):
+            pic = QtGui.QPixmap(self.currPath)
+            self.setFixedSize(pic.size())
+            self.label.setFixedSize(pic.size())
+            self.label.setPixmap(pic)
+            self.isGray = False
+
+            targetDict = { #生成所有临时图片
+                "1": (self.currPath, self.getPath(".tempGray.png")),
+                "2": (self.getPath(".tempGray.png"), self.getPath(".tempGraySharpfy.png")),
+                "3": (self.currPath, self.getPath(".tempSharpfy.png")),
+                "4": (self.getPath(".tempGray.png"), self.getPath(".tempGraySmoothfy.png")),
+                "5": (self.currPath, self.getPath(".tempSmoothfy.png")),
+            }
+            for key in targetDict:
+                pipe = Popen([self.getPath("DataStructure.out"), key, targetDict[key][0], targetDict[key][1]])
+                pipe.wait()
+
+
+    def graify(self): #灰化图片
         if self.currPath is None:
             return
-        pipe = Popen([self.joinThePath("DataStructure.out"), "1", self.currPath, self.joinThePath(".tempGray.png")])
-        pipe.wait()
-        pic = QtGui.QPixmap(self.joinThePath(".tempGray.png"))
-        self.setFixedSize(pic.size())
-        self.label.setFixedSize(pic.size())
+        pic = QtGui.QPixmap(self.getPath(".tempGray.png"))
         self.label.setPixmap(pic)
-        self.currStatus = "gray"
-        self.currSharp = None
+        self.isGray = True
+
 
     def sharpfy(self):
         if self.currPath is None:
             return
-        if self.currStatus == "gray":
-            pipe = Popen([self.joinThePath("DataStructure.out"), "2", self.joinThePath(".tempGray.png"), self.joinThePath(".tempGraySharpfy.png")])
-            pipe.wait()
-            pic = QtGui.QPixmap(self.joinThePath(".tempGraySharpfy.png"))
+        if self.isGray == True:
+            pic = QtGui.QPixmap(self.getPath(".tempGraySharpfy.png"))
         else:
-            pipe = Popen([self.joinThePath("DataStructure.out"), "3", self.currPath, self.joinThePath(".tempSharpfy.png")])
-            pipe.wait()
-            pic = QtGui.QPixmap(self.joinThePath(".tempSharpfy.png"))
-        self.setFixedSize(pic.size())
-        self.label.setFixedSize(pic.size())
+            pic = QtGui.QPixmap(self.getPath(".tempSharpfy.png"))
         self.label.setPixmap(pic)
-        self.currSharp = "sharp"
+
 
     def smoothfy(self):
         if self.currPath is None:
             return
-        if self.currStatus == "gray":
-            pipe = Popen([self.joinThePath("DataStructure.out"), "4", self.joinThePath(".tempGray.png"), self.joinThePath(".tempGraySmoothfy.png")])
-            pipe.wait()
-            pic = QtGui.QPixmap(self.joinThePath(".tempGraySmoothfy.png"))
+        if self.isGray == True:
+            pic = QtGui.QPixmap(self.getPath(".tempGraySmoothfy.png"))
         else:
-            pipe = Popen([self.joinThePath("DataStructure.out"), "5", self.currPath, self.joinThePath(".tempSmoothfy.png")])
-            pipe.wait()
-            pic = QtGui.QPixmap(self.joinThePath(".tempSmoothfy.png"))
-        self.setFixedSize(pic.size())
-        self.label.setFixedSize(pic.size())
+            pic = QtGui.QPixmap(self.getPath(".tempSmoothfy.png"))
         self.label.setPixmap(pic)
-        self.currSharp = "smooth"
         
+
     def origin(self):
         if self.currPath is None:
             return
         pic = QtGui.QPixmap(self.currPath)
-        self.setFixedSize(pic.size())
-        self.label.setFixedSize(pic.size())
         self.label.setPixmap(pic)
-        self.currStatus = "origin"
-        self.currSharp = None
+        self.isGray = False
+
 
     def copy(self, src, target):
         f = open(src, "rb").read()
         open(target, "wb").write(f)
 
+
     def savePic(self):
-        if self.currStatus is None:
+        if self.currPath is None:
             return            
         path = QtWidgets.QFileDialog.getSaveFileName(self, "Select your save place", sys.path[0], "Pictures (*.png *.jpg *.jpeg *.bmp)")
         if path:
             savePath = path[0]
-            if self.currStatus == "gray":
-                if self.currSharp is None:
-                    self.copy(self.joinThePath(".tempGray.png"), savePath)
-                if self.currSharp == "sharp":
-                    self.copy(self.joinThePath(".tempGraySharpfy.png"), savePath)
-                if self.currSharp == "smooth":
-                    self.copy(self.joinThePath(".tempGraySmoothfy.png"), savePath)
-            elif self.currStatus == "origin":
-                if self.currSharp is None:
-                    self.copy(self.joinThePath(".temp.png"), savePath)
-                if self.currSharp == "sharp":
-                    self.copy(self.joinThePath(".tempSharpfy.png"), savePath)
-                if self.currSharp == "smooth":
-                    self.copy(self.joinThePath(".tempSmoothfy.png"), savePath)
+            self.label.pixmap().save(savePath)
+
 
 app = QtWidgets.QApplication(sys.argv)
 mygui = Gui()

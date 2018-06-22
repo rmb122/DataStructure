@@ -1,5 +1,4 @@
 #include <iostream>
-#include <cstdlib>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -25,8 +24,11 @@ inline int& underflow(int &x) {
     return x;
 }
 
-Mat loadImg(char name[]) {
+Mat loadImg(char const* name) {
     Mat img = imread(name, CV_LOAD_IMAGE_UNCHANGED);
+    if(img.channels() == 4) {
+        img = imread(name, CV_LOAD_IMAGE_COLOR); //重新读取三通道的
+    }
     return img;
 }
 
@@ -34,13 +36,13 @@ Mat graify(Mat &img) {
     Mat newImg(img.rows, img.cols, CV_8UC1);
     for(unsigned int x = 0; x < img.cols; x++) {
         for(unsigned int y = 0; y < img.rows; y++) {
-            newImg.at<uchar>(y, x) = (img.at<Vec4b>(y, x)[0] + img.at<Vec4b>(y, x)[1] + img.at<Vec4b>(y, x)[2]) / 3;
+            newImg.at<uchar>(y, x) = (img.at<Vec3b>(y, x)[0] + img.at<Vec3b>(y, x)[1] + img.at<Vec3b>(y, x)[2]) / 3;
         }
     }
     return newImg;
 }
 
-Mat sharpfyRGBA(Mat &img) {
+Mat sharpfyRGB(Mat &img) {
     int laplaTemplate[] = {-1, -1, -1, -1, 9, -1, -1, -1, -1};
     Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
@@ -49,19 +51,18 @@ Mat sharpfyRGBA(Mat &img) {
             unsigned int index = 0;
             for(int xShift = -1; xShift < 2 ; xShift++) {
                 for(int yShift = -1; yShift < 2 ; yShift++) {
-                    R += (img.at<Vec4b>(y + yShift, x + xShift)[2] * laplaTemplate[index]);
-                    G += (img.at<Vec4b>(y + yShift, x + xShift)[1] * laplaTemplate[index]);
-                    B += (img.at<Vec4b>(y + yShift, x + xShift)[0] * laplaTemplate[index]);
+                    R += (img.at<Vec3b>(y + yShift, x + xShift)[2] * laplaTemplate[index]);
+                    G += (img.at<Vec3b>(y + yShift, x + xShift)[1] * laplaTemplate[index]);
+                    B += (img.at<Vec3b>(y + yShift, x + xShift)[0] * laplaTemplate[index]);
                     index++;
                 }
             }
             R = overflow(underflow(R));
             G = overflow(underflow(G));
             B = overflow(underflow(B));
-            newImg.at<Vec4b>(y, x)[2] = R;
-            newImg.at<Vec4b>(y, x)[1] = G;
-            newImg.at<Vec4b>(y, x)[0] = B;
-            newImg.at<Vec4b>(y, x)[3] = img.at<Vec4b>(y, x)[3];
+            newImg.at<Vec3b>(y, x)[2] = R;
+            newImg.at<Vec3b>(y, x)[1] = G;
+            newImg.at<Vec3b>(y, x)[0] = B;
         }
     }
     return newImg;
@@ -87,7 +88,7 @@ Mat sharpfyGray(Mat &img) {
     return newImg;
 }
 
-Mat smoothfyRGBA(Mat &img) {
+Mat smoothfyRGB(Mat &img) {
     int gaussTemplate[] = {1, 2, 1, 2, 4, 2, 1, 2, 1};
     Mat newImg = img.clone();
     for(unsigned int x = 1; x < img.cols - 1; x++) {
@@ -96,9 +97,9 @@ Mat smoothfyRGBA(Mat &img) {
             unsigned int index = 0;
             for(int xShift = -1; xShift < 2 ; xShift++) {
                 for(int yShift = -1; yShift < 2 ; yShift++) {
-                    R += img.at<Vec4b>(y + yShift, x + xShift)[2] * gaussTemplate[index];
-                    G += img.at<Vec4b>(y + yShift, x + xShift)[1] * gaussTemplate[index];
-                    B += img.at<Vec4b>(y + yShift, x + xShift)[0] * gaussTemplate[index];
+                    R += img.at<Vec3b>(y + yShift, x + xShift)[2] * gaussTemplate[index];
+                    G += img.at<Vec3b>(y + yShift, x + xShift)[1] * gaussTemplate[index];
+                    B += img.at<Vec3b>(y + yShift, x + xShift)[0] * gaussTemplate[index];
                     index++;
                 }
             }
@@ -108,10 +109,9 @@ Mat smoothfyRGBA(Mat &img) {
             R = overflow(R);
             G = overflow(G);
             B = overflow(B);
-            newImg.at<Vec4b>(y, x)[2] = R;
-            newImg.at<Vec4b>(y, x)[1] = G;
-            newImg.at<Vec4b>(y, x)[0] = B;
-            newImg.at<Vec4b>(y, x)[3] = img.at<Vec4b>(y, x)[3];
+            newImg.at<Vec3b>(y, x)[2] = R;
+            newImg.at<Vec3b>(y, x)[1] = G;
+            newImg.at<Vec3b>(y, x)[0] = B;
         }
     }
     return newImg;
@@ -145,7 +145,7 @@ int main(int argc, char const *argv[]) {
         char const* savePath = argv[3];
 
         int mode = atoi(modeChar);
-        Mat img = imread(path, CV_LOAD_IMAGE_UNCHANGED);
+        Mat img = loadImg(path);
 
         switch(mode) {
         case 1:
@@ -155,13 +155,13 @@ int main(int argc, char const *argv[]) {
             img = sharpfyGray(img);
             break;
         case 3:
-            img = sharpfyRGBA(img);
+            img = sharpfyRGB(img);
             break;
         case 4:
             img = smoothfyGray(img);
             break;
         case 5:
-            img = smoothfyRGBA(img);
+            img = smoothfyRGB(img);
             break;
         default:
             return -1;
