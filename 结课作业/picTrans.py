@@ -50,7 +50,7 @@ class Ui_MainWindow(object):
         self.act_origin.setText(_translate("MainWindow", "原图"))
         self.act_gray.setText(_translate("MainWindow", "灰度图"))
         self.act_sharpfy.setText(_translate("MainWindow", "锐化"))
-        self.act_smoothfy.setText(_translate("MainWindow", "模糊"))
+        self.act_smoothfy.setText(_translate("MainWindow", "平滑"))
         self.act_savePic.setText(_translate("MainWindow", "保存图片"))
 
 
