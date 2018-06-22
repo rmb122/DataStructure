@@ -67,6 +67,17 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         self.act_smoothfy.triggered.connect(self.smoothfy)
         self.act_origin.triggered.connect(self.origin)
         self.act_savePic.triggered.connect(self.savePic)
+        self.label.mouseMoveEvent = self.printPos
+        
+    def printPos(self, event):
+        pic = self.label.pixmap()
+        if pic is None:
+            return
+        painter = QtGui.QPainter(pic)
+        painter.setPen(QtGui.QColor(0, 160, 230))
+        painter.drawPoint(event.x(), event.y())
+        self.label.setPixmap(pic)
+        print(event.x(), event.y())
 
     def joinThePath(self, name):
         return "/".join([sys.path[0], name])
