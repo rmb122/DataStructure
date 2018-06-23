@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>458</width>
-    <height>96</height>
+    <width>542</width>
+    <height>52</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,6 +46,7 @@
    <addaction name="act_gray"/>
    <addaction name="act_sharpfy"/>
    <addaction name="act_smoothfy"/>
+   <addaction name="act_edgeDetect"/>
    <addaction name="act_savePic"/>
   </widget>
   <action name="act_choosePic">
@@ -76,6 +77,11 @@
   <action name="act_savePic">
    <property name="text">
     <string>保存图片</string>
+   </property>
+  </action>
+  <action name="act_edgeDetect">
+   <property name="text">
+    <string>边缘检测</string>
    </property>
   </action>
  </widget>

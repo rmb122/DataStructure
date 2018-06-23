@@ -1,5 +1,5 @@
 import sys
-from subprocess import Popen, PIPE
+from subprocess import Popen
 
 from PIL import Image
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(430, 96)
+        MainWindow.setFixedSize(542, 52)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -32,11 +32,14 @@ class Ui_MainWindow(object):
         self.act_smoothfy.setObjectName("act_smoothfy")
         self.act_savePic = QtWidgets.QAction(MainWindow)
         self.act_savePic.setObjectName("act_savePic")
+        self.act_edgeDetect = QtWidgets.QAction(MainWindow)
+        self.act_edgeDetect.setObjectName("act_edgeDetect")
         self.toolBar.addAction(self.act_choosePic)
         self.toolBar.addAction(self.act_origin)
         self.toolBar.addAction(self.act_gray)
         self.toolBar.addAction(self.act_sharpfy)
         self.toolBar.addAction(self.act_smoothfy)
+        self.toolBar.addAction(self.act_edgeDetect)
         self.toolBar.addAction(self.act_savePic)
 
         self.retranslateUi(MainWindow)
@@ -52,6 +55,7 @@ class Ui_MainWindow(object):
         self.act_sharpfy.setText(_translate("MainWindow", "锐化"))
         self.act_smoothfy.setText(_translate("MainWindow", "平滑"))
         self.act_savePic.setText(_translate("MainWindow", "保存图片"))
+        self.act_edgeDetect.setText(_translate("MainWindow", "边缘检测"))
 
 
 class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -65,6 +69,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         self.act_smoothfy.triggered.connect(self.smoothfy)
         self.act_origin.triggered.connect(self.origin)
         self.act_savePic.triggered.connect(self.savePic)
+        self.act_edgeDetect.triggered.connect(self.edgeDedect)
         self.currPath = None
         self.isGray = False
         self.label.mousePressEvent = self.setStartPoint  #设置回调函数
@@ -75,7 +80,10 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         pic = self.label.pixmap()
         painter = QtGui.QPainter(pic)
         pen = QtGui.QPen(QtGui.QColor(0, 160, 230))
-        pen.setWidth(5)
+        pen.setWidth(1)
+        pen.setStyle(QtCore.Qt.SolidLine)
+        pen.setCapStyle(QtCore.Qt.RoundCap)
+        pen.setJoinStyle(QtCore.Qt.RoundJoin)
         painter.setPen(pen)
         return painter
 
@@ -117,6 +125,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
                 "3": (self.currPath, self.getPath(".tempSharpfy.png")),
                 "4": (self.getPath(".tempGray.png"), self.getPath(".tempGraySmoothfy.png")),
                 "5": (self.currPath, self.getPath(".tempSmoothfy.png")),
+                "7": (self.getPath(".tempGray.png"), self.getPath(".tempEdge.png"))
             }
             for key in targetDict:
                 pipe = Popen([self.getPath("DataStructure.out"), key, targetDict[key][0], targetDict[key][1]])
@@ -157,6 +166,13 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         pic = QtGui.QPixmap(self.currPath)
         self.label.setPixmap(pic)
         self.isGray = False
+
+
+    def edgeDedect(self):
+        if self.currPath is None:
+            return
+        pic = QtGui.QPixmap(self.getPath(".tempEdge.png"))
+        self.label.setPixmap(pic)
 
 
     def copy(self, src, target):
