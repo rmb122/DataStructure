@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>542</width>
+    <width>496</width>
     <height>52</height>
    </rect>
   </property>
@@ -47,11 +47,15 @@
    <addaction name="act_sharpfy"/>
    <addaction name="act_smoothfy"/>
    <addaction name="act_edgeDetect"/>
+   <addaction name="act_setting"/>
    <addaction name="act_savePic"/>
   </widget>
   <action name="act_choosePic">
    <property name="text">
-    <string>选择图片</string>
+    <string>选择</string>
+   </property>
+   <property name="toolTip">
+    <string>选择</string>
    </property>
   </action>
   <action name="act_origin">
@@ -61,7 +65,10 @@
   </action>
   <action name="act_gray">
    <property name="text">
-    <string>灰度图</string>
+    <string>灰度</string>
+   </property>
+   <property name="toolTip">
+    <string>灰度</string>
    </property>
   </action>
   <action name="act_sharpfy">
@@ -71,17 +78,31 @@
   </action>
   <action name="act_smoothfy">
    <property name="text">
-    <string>模糊</string>
+    <string>平滑</string>
    </property>
   </action>
   <action name="act_savePic">
    <property name="text">
-    <string>保存图片</string>
+    <string>保存</string>
+   </property>
+   <property name="toolTip">
+    <string>保存</string>
    </property>
   </action>
   <action name="act_edgeDetect">
    <property name="text">
-    <string>边缘检测</string>
+    <string>边缘</string>
+   </property>
+   <property name="toolTip">
+    <string>边缘</string>
+   </property>
+  </action>
+  <action name="act_setting">
+   <property name="text">
+    <string>设置</string>
+   </property>
+   <property name="toolTip">
+    <string>设置</string>
    </property>
   </action>
  </widget>
