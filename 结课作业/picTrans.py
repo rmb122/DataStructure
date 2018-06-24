@@ -117,7 +117,6 @@ class settings(QtWidgets.QDialog, Ui_Dialog):
         self.btn_confirm.clicked.connect(self.hide)
         self.penColor = QtGui.QColor(0, 160, 230)
         self.lab_colorNow.setStyleSheet("background-color: rgb({R}, {G}, {B});".format(R=self.penColor.red(), G=self.penColor.green(), B=self.penColor.blue()))
-        self.signalHidden = QtCore.pyqtSignal(name="signalHidden")
         
 
     def getColor(self):
@@ -193,7 +192,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
             self.update()
 
 
-    def doNoting(self, event):
+    def doNothing(self, event):
         pass
 
 
@@ -222,7 +221,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setModeMosaic(self):
         self.label.mousePressEvent = self.drawMosaic
-        self.label.mouseMoveEvent = self.doNoting
+        self.label.mouseMoveEvent = self.doNothing
 
 
     def getPath(self, name): #返回绝对路径
