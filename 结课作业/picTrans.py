@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.setFixedSize(496, 52)
+        MainWindow.setFixedSize(553, 52)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.label = QtWidgets.QLabel(self.centralwidget)
@@ -36,11 +36,14 @@ class Ui_MainWindow(object):
         self.act_edgeDetect.setObjectName("act_edgeDetect")
         self.act_setting = QtWidgets.QAction(MainWindow)
         self.act_setting.setObjectName("act_setting")
+        self.act_binary = QtWidgets.QAction(MainWindow)
+        self.act_binary.setObjectName("act_binary")
         self.toolBar.addAction(self.act_choosePic)
         self.toolBar.addAction(self.act_origin)
         self.toolBar.addAction(self.act_gray)
         self.toolBar.addAction(self.act_sharpfy)
         self.toolBar.addAction(self.act_smoothfy)
+        self.toolBar.addAction(self.act_binary)
         self.toolBar.addAction(self.act_edgeDetect)
         self.toolBar.addAction(self.act_setting)
         self.toolBar.addAction(self.act_savePic)
@@ -65,6 +68,7 @@ class Ui_MainWindow(object):
         self.act_edgeDetect.setToolTip(_translate("MainWindow", "边缘"))
         self.act_setting.setText(_translate("MainWindow", "设置"))
         self.act_setting.setToolTip(_translate("MainWindow", "设置"))
+        self.act_binary.setText(_translate("MainWindow", "二值"))
 
 
 class Ui_Dialog(object):
@@ -73,7 +77,6 @@ class Ui_Dialog(object):
         Dialog.setFixedSize(200, 159)
         self.btn_color = QtWidgets.QPushButton(Dialog)
         self.btn_color.setGeometry(QtCore.QRect(90, 10, 91, 31))
-        self.btn_color.setText("")
         self.btn_color.setObjectName("btn_color")
         self.lab_colorNow = QtWidgets.QLabel(Dialog)
         self.lab_colorNow.setGeometry(QtCore.QRect(20, 10, 65, 31))
@@ -98,6 +101,7 @@ class Ui_Dialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Settings"))
+        self.btn_color.setText(_translate("Dialog", "设置颜色"))
         self.lab_colorNow.setText(_translate("Dialog", "当前颜色"))
         self.btn_confirm.setText(_translate("Dialog", "确定"))
         self.lab_LineWidth.setText(_translate("Dialog", "笔画粗细"))
@@ -135,6 +139,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         self.act_smoothfy.triggered.connect(self.smoothfy)
         self.act_origin.triggered.connect(self.origin)
         self.act_savePic.triggered.connect(self.savePic)
+        self.act_binary.triggered.connect(self.binary)
         self.act_edgeDetect.triggered.connect(self.edgeDedect)
         self.act_setting.triggered.connect(self.showSettings)
         self.currPath = None
@@ -240,6 +245,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
                 "3": (self.currPath, self.getPath(".tempSharpfy.png")),
                 "4": (self.getPath(".tempGray.png"), self.getPath(".tempGraySmoothfy.png")),
                 "5": (self.currPath, self.getPath(".tempSmoothfy.png")),
+                "6": (self.getPath(".tempGray.png"), self.getPath(".tempBinary.png")),
                 "7": (self.getPath(".tempGray.png"), self.getPath(".tempEdge.png"))
             }
             for key in targetDict:
@@ -281,6 +287,13 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         pic = QtGui.QPixmap(self.currPath)
         self.label.setPixmap(pic)
         self.isGray = False
+
+
+    def binary(self):
+        if self.currPath is None:
+            return
+        pic = QtGui.QPixmap(self.getPath(".tempBinary.png"))
+        self.label.setPixmap(pic)
 
 
     def edgeDedect(self):

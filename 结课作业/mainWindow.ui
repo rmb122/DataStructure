@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>496</width>
+    <width>553</width>
     <height>52</height>
    </rect>
   </property>
@@ -46,6 +46,7 @@
    <addaction name="act_gray"/>
    <addaction name="act_sharpfy"/>
    <addaction name="act_smoothfy"/>
+   <addaction name="act_binary"/>
    <addaction name="act_edgeDetect"/>
    <addaction name="act_setting"/>
    <addaction name="act_savePic"/>
@@ -103,6 +104,11 @@
    </property>
    <property name="toolTip">
     <string>设置</string>
+   </property>
+  </action>
+  <action name="act_binary">
+   <property name="text">
+    <string>二值</string>
    </property>
   </action>
  </widget>
