@@ -233,7 +233,7 @@ class Gui(QtWidgets.QMainWindow, Ui_MainWindow):
         if path and path[0]:
             self.currPath = path[0]
             pic = QtGui.QPixmap(self.currPath)
-            self.setFixedSize(pic.size())
+            self.setFixedSize(pic.width(), pic.height() + 36) #36 是工具栏的高度
             self.label.setFixedSize(pic.size())
             self.label.setPixmap(pic)
             self.isGray = False
