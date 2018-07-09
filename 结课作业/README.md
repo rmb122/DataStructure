@@ -2,7 +2,8 @@
 
 需要 `opencv` 库
 ```sh
-pip install pyqt5
+sudp pacman -S opencv
+sudo pip install pyqt5
 cmake CMakeLists.txt
 make
 ```
