@@ -15,7 +15,6 @@ namespace calc {
     }
 
     Token Lexer::next() {
-        int temp_val;
         operater_type temp_opt;
         calc::Token token;
 
@@ -36,6 +35,21 @@ namespace calc {
             } else if ((temp_opt = calc::Token::get_operater(*iter)) != calc::operater_type_unkown) {
                 token.t_type = calc::token_type_operater;
                 token.t_val.opt = temp_opt;
+                iter++;
+                return token;
+            } else if (calc::Token::is_valid_varchar(*iter)) {
+                token.t_type = calc::token_type_var;
+                token.t_val.val_name = new std::string();
+                token.t_val.val_name->push_back(*iter);
+
+                while (iter + 1 != expr.end() && calc::Token::is_valid_varchar(*(iter + 1))) {
+                    iter++;
+                    token.t_val.val_name->push_back(*iter);
+                }
+                iter++;
+                return token;
+            } else if (*iter == ';') {
+                token.t_type = calc::token_type_eol;
                 iter++;
                 return token;
             } else {

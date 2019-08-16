@@ -16,6 +16,8 @@ namespace calc {
 
         void match_opt(char c);
         void match_num();
+        void match_var();
+        void match_eol();
 
         TokenNode* parse_factor();
         TokenNode* parse_expr();
@@ -24,7 +26,7 @@ namespace calc {
     public:
         Parser() = default;
 
-        TokenNode* parse(std::string expr);
+        std::vector<TokenNode*> parse(std::string expr);
     };
 }
 

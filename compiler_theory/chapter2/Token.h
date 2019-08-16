@@ -17,6 +17,7 @@ namespace calc {
         operater_type_div = '/',
         operater_type_lpar = '(',
         operater_type_rpar = ')',
+        operater_type_assign = '=',
         operater_type_unkown = '\xff',
     };
 
@@ -24,19 +25,24 @@ namespace calc {
         token_type_num = 0,
         token_type_operater = 1,
         token_type_eof = 2,
+        token_type_var = 3,
+        token_type_eol = 4,
     };
 
     union token_val {
         int num;
         operater_type opt;
+        std::string* val_name = nullptr;
     };
 
     class Token {
     public:
         token_type t_type;
         token_val t_val{};
+        bool owner = false;
 
         Token() = default;
+        ~Token();
 
         explicit Token(int num);
 
@@ -46,30 +52,11 @@ namespace calc {
 
         std::string to_string();
 
-        operater_type static get_operater(char c) {
-            switch (c) {
-                case '+':
-                    return operater_type_add;
-                case '-':
-                    return operater_type_sub;
-                case '*':
-                    return operater_type_mul;
-                case '/':
-                    return operater_type_div;
-                case '(':
-                    return operater_type_lpar;
-                case ')':
-                    return operater_type_rpar;
-                default:
-                    return operater_type_unkown;
-            }
-        }
+        operater_type static get_operater(char c);
 
-        void static dump_token(calc::Token token) {
-            std::cout << "Token type: " << token.t_type << std::endl;
-            std::cout << "Value: " + token.to_string();
-            std::cout << std::endl;
-        }
+        bool static is_valid_varchar(char &c);
+
+        void static dump_token(calc::Token token);
     };
 }
 

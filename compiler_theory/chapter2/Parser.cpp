@@ -22,6 +22,22 @@ namespace calc {
         }
     }
 
+    void Parser::match_var() {
+        if (this->lookahead.t_type == token_type_var) {
+            this->lookahead = lexer.next();
+        } else {
+            throw std::runtime_error("Invalid syntax, expecting a var, but get " + this->lookahead.to_string());
+        }
+    }
+
+    void Parser::match_eol() {
+        if (this->lookahead.t_type == token_type_eol) {
+            this->lookahead = lexer.next();
+        } else {
+            throw std::runtime_error("Invalid syntax, expecting a eol, but get " + this->lookahead.to_string());
+        }
+    }
+
     TokenNode* Parser::parse_factor()  {
         TokenNode* node;
         switch (this->lookahead.t_type) {
@@ -39,6 +55,11 @@ namespace calc {
                 } else {
                     goto error;
                 }
+            case token_type_var:
+                node = new TokenNode();
+                node->curr_token = lookahead;
+                match_var();
+                break;
             case token_type_eof:
                 node = nullptr;
                 break;
@@ -62,6 +83,20 @@ namespace calc {
                 right = parse_term();
                 if (right == nullptr) {
                     throw std::runtime_error("Unexpected EOF.");
+                }
+                parent->right_node = right;
+                parent->left_node = left;
+                left = parent;
+            } else if (lookahead == Token('=')) {
+                parent = new TokenNode();
+                parent->curr_token = lookahead;
+                match_opt('=');
+                right = parse_expr();
+                if (right == nullptr) {
+                    throw std::runtime_error("Unexpected EOF.");
+                }
+                if (left->curr_token.t_type != token_type_var) {
+                    throw std::runtime_error("Can not assignment value to " + left->curr_token.to_string());
                 }
                 parent->right_node = right;
                 parent->left_node = left;
@@ -95,14 +130,23 @@ namespace calc {
         }
     }
 
-    TokenNode* Parser::parse(std::string expr) {
+    std::vector<TokenNode*> Parser::parse(std::string expr) {
+        std::vector<TokenNode*> trees;
+
         this->lexer.init(expr);
         this->lookahead = this->lexer.next();
-        TokenNode *root = parse_expr();
-        if (this->lookahead.t_type == token_type_eof) {
-            return root;
-        } else {
-            throw std::runtime_error("Unexpected trailing.");
+
+        while (true) {
+            TokenNode *root = parse_expr();
+            if (this->lookahead.t_type == token_type_eol) {
+                trees.push_back(root);
+                match_eol();
+            } else if (this->lookahead.t_type == token_type_eof) {
+                trees.push_back(root);
+                return trees;
+            } else {
+                throw std::runtime_error("Unexpected trailing.");
+            }
         }
     }
 }

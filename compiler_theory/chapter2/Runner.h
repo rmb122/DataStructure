@@ -6,9 +6,11 @@
 #define CALC_RUNNER_H
 
 #include "TokenNode.h"
+#include "Symbol.h"
 
 namespace calc {
     class Runner {
+        Symbol symbols;
     public:
         double run(TokenNode *root);
     };
