@@ -6,33 +6,38 @@
 
 namespace calc {
     Token::Token(int num)  {
-        this->t_type = token_type_num;
-        this->t_val.num = num;
+        this->t_type = token_type_int;
+        this->t_val.int_num = num;
     }
 
-    Token::Token(char c)  {
-        this->t_type = token_type_operater;
-        this->t_val.opt = get_operater(c);
-        if (this->t_val.opt == operater_type_unkown) {
-            throw std::runtime_error("Unexpected operater '" + std::string(&c, 1) + "'.");
+    Token::Token(double num)  {
+        this->t_type = token_type_double;
+        this->t_val.double_num = num;
+    }
+
+    Token::Token(operator_type c)  {
+        this->t_type = token_type_operator;
+        this->t_val.opt = c;
+        if (this->t_val.opt == operator_type_unknown) {
+            throw std::runtime_error("Unexpected operator " + operator_string_map[this->t_val.opt] +".");
         }
     }
 
     Token::~Token() {
-        if (this->t_type == calc::token_type_var && this->t_val.val_name != nullptr && this->owner) {
-            delete this->t_val.val_name;
+        if (this->t_type == calc::token_type_var && this->t_val.var_name != nullptr && this->owner) {
+            delete this->t_val.var_name;
         }
     }
 
     bool Token::operator==(calc::Token token)  {
         if (token.t_type == this->t_type) {
             switch (token.t_type) {
-                case token_type_num:
-                    return token.t_val.num == this->t_val.num;
-                case token_type_operater:
+                case token_type_int:
+                    return token.t_val.int_num == this->t_val.int_num;
+                case token_type_operator:
                     return token.t_val.opt == this->t_val.opt;
                 case token_type_var:
-                    return *token.t_val.val_name == *this->t_val.val_name;
+                    return *token.t_val.var_name == *this->t_val.var_name;
                 case token_type_eof:
                     return true;
                 case token_type_eol:
@@ -47,39 +52,41 @@ namespace calc {
 
     std::string Token::to_string()  {
         switch (this->t_type) {
-            case token_type_operater:
-                return std::string((char*)&this->t_val.opt, 1);
-            case token_type_num:
-                return std::to_string(this->t_val.num);
+            case token_type_operator:
+                return operator_string_map[this->t_val.opt];
+            case token_type_int:
+                return std::to_string(this->t_val.int_num);
             case token_type_var:
-                return "var: " + *this->t_val.val_name;
+                return *this->t_val.var_name;
             case token_type_eof:
                 return "EOF";
             case token_type_eol:
                 return "EOL";
+            case token_type_double:
+                return std::to_string(this->t_val.double_num);
             default:
-                return "Unkown type " + std::to_string(this->t_type);
+                return "Unknown type " + std::to_string(this->t_type);
         }
     }
 
-    operater_type Token::get_operater(char c)  {
+    operator_type Token::get_operator(char c)  {
         switch (c) {
             case '+':
-                return operater_type_add;
+                return operator_type_add;
             case '-':
-                return operater_type_sub;
+                return operator_type_sub;
             case '*':
-                return operater_type_mul;
+                return operator_type_mul;
             case '/':
-                return operater_type_div;
+                return operator_type_div;
             case '(':
-                return operater_type_lpar;
+                return operator_type_lpar;
             case ')':
-                return operater_type_rpar;
+                return operator_type_rpar;
             case '=':
-                return operater_type_assign;
+                return operator_type_assign;
             default:
-                return operater_type_unkown;
+                return operator_type_unknown;
         }
     }
 

@@ -7,12 +7,21 @@
 
 #include "TokenNode.h"
 #include "Symbol.h"
+#include "Opcode.h"
 
 namespace calc {
     class Runner {
         Symbol symbols;
+        std::vector<calc::Token> stack;
+
+        double get_token_num_val(calc::Token &token);
     public:
-        double run(TokenNode *root);
+        double run(std::vector<calc::Opcode> opcode_array);
+        void clear_stack();
+
+        void dump_opcode_array(std::vector<calc::Opcode> &opcode_array);
+        void dump_curr_stack();
+        void dump_symbols();
     };
 }
 

@@ -8,31 +8,45 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <vector>
 
 namespace calc {
-    enum operater_type {
-        operater_type_add = '+',
-        operater_type_sub = '-',
-        operater_type_mul = '*',
-        operater_type_div = '/',
-        operater_type_lpar = '(',
-        operater_type_rpar = ')',
-        operater_type_assign = '=',
-        operater_type_unkown = '\xff',
+    enum operator_type {
+        operator_type_add = 0,
+        operator_type_sub = 1,
+        operator_type_mul = 2,
+        operator_type_div = 3,
+        operator_type_lpar = 4,
+        operator_type_rpar = 5,
+        operator_type_assign = 6,
+        operator_type_unknown = 7,
     };
 
     enum token_type {
-        token_type_num = 0,
-        token_type_operater = 1,
+        token_type_int = 0,
+        token_type_operator = 1,
         token_type_eof = 2,
         token_type_var = 3,
         token_type_eol = 4,
+        token_type_double = 5
+    };
+
+    static std::vector<std::string> operator_string_map = {
+            "+",
+            "-",
+            "*",
+            "/",
+            ")",
+            "(",
+            "=",
+            "UNKNOWN"
     };
 
     union token_val {
-        int num;
-        operater_type opt;
-        std::string* val_name = nullptr;
+        int int_num;
+        operator_type opt;
+        double double_num;
+        std::string* var_name = nullptr;
     };
 
     class Token {
@@ -45,14 +59,14 @@ namespace calc {
         ~Token();
 
         explicit Token(int num);
-
-        explicit Token(char c);
+        explicit Token(double num);
+        explicit Token(operator_type c);
 
         bool operator==(Token token);
 
         std::string to_string();
 
-        operater_type static get_operater(char c);
+        operator_type static get_operator(char c);
 
         bool static is_valid_varchar(char &c);
 

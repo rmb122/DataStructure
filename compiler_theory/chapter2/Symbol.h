@@ -10,11 +10,12 @@
 namespace calc {
     class Symbol {
         std::unordered_map<std::string, double> symbols;
-
     public:
-        double get(std::string varname);
+        double get(std::string var_name);
 
-        void set(std::string varname, double value);
+        void set(std::string var_name, double value);
+
+        std::unordered_map<std::string, double> get_all_symblos();
     };
 }
 

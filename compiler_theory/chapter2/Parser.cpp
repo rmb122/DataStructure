@@ -5,17 +5,17 @@
 #include "Parser.h"
 
 namespace calc {
-    void Parser::match_opt(char c) {
+    void Parser::match_opt(operator_type c) {
         if (this->lookahead == Token(c)) {
             this->lookahead = lexer.next();
             return;
         } else {
-            throw std::runtime_error("Invalid syntax, expecting '" + std::string(&c, 1) + "', but get " + this->lookahead.to_string());
+            throw std::runtime_error("Invalid syntax, expecting " + operator_string_map[c] + " , but get " + this->lookahead.to_string());
         }
     }
 
     void Parser::match_num()  {
-        if (this->lookahead.t_type == token_type_num) {
+        if (this->lookahead.t_type == token_type_int || this->lookahead.t_type == token_type_double) {
             this->lookahead = lexer.next();
         } else {
             throw std::runtime_error("Invalid syntax, expecting a number, but get " + this->lookahead.to_string());
@@ -41,16 +41,21 @@ namespace calc {
     TokenNode* Parser::parse_factor()  {
         TokenNode* node;
         switch (this->lookahead.t_type) {
-            case token_type_num:
+            case token_type_int:
                 node = new TokenNode();
                 node->curr_token = lookahead;
                 match_num();
                 break;
-            case token_type_operater:
-                if (this->lookahead.t_val.opt == '(') {
-                    match_opt('(');
+            case token_type_double:
+                node = new TokenNode();
+                node->curr_token = lookahead;
+                match_num();
+                break;
+            case token_type_operator:
+                if (this->lookahead.t_val.opt == operator_type_lpar) {
+                    match_opt(operator_type_lpar);
                     node = parse_expr();
-                    match_opt(')');
+                    match_opt(operator_type_rpar);
                     break;
                 } else {
                     goto error;
@@ -76,7 +81,7 @@ namespace calc {
         TokenNode *right;
 
         while (true) {
-            if (lookahead == Token('+') || lookahead == Token('-')) {
+            if (lookahead == Token(operator_type_add) || lookahead == Token(operator_type_sub)) {
                 parent = new TokenNode();
                 parent->curr_token = lookahead;
                 match_opt(lookahead.t_val.opt);
@@ -87,10 +92,10 @@ namespace calc {
                 parent->right_node = right;
                 parent->left_node = left;
                 left = parent;
-            } else if (lookahead == Token('=')) {
+            } else if (lookahead == Token(operator_type_assign)) {
                 parent = new TokenNode();
                 parent->curr_token = lookahead;
-                match_opt('=');
+                match_opt(operator_type_assign);
                 right = parse_expr();
                 if (right == nullptr) {
                     throw std::runtime_error("Unexpected EOF.");
@@ -113,7 +118,7 @@ namespace calc {
         TokenNode *right;
 
         while (true) {
-            if (lookahead == Token('*') || lookahead == Token('/')) {
+            if (lookahead == Token(operator_type_mul) || lookahead == Token(operator_type_div)) {
                 parent = new TokenNode();
                 parent->curr_token = lookahead;
                 match_opt(lookahead.t_val.opt);

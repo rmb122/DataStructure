@@ -14,7 +14,7 @@ namespace calc {
         Lexer lexer;
         Token lookahead;
 
-        void match_opt(char c);
+        void match_opt(operator_type c);
         void match_num();
         void match_var();
         void match_eol();
